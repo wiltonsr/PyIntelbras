@@ -1,12 +1,16 @@
 VENV = .venv
 
-.PHONY: install build clean
+.PHONY: install build upload clean
 
 build: $(VENV)
-	$(VENV)/bin/python -m build
+	$(VENV)/bin/python setup.py sdist
 
 install: $(VENV)
-	$(VENV)/bin/pip install --upgrade build
+	$(VENV)/bin/pip install --upgrade build setuptools
+
+upload: build
+	$(VENV)/bin/pip install --upgrade twine
+	$(VENV)/bin/python -m twine upload dist/*
 
 clean:
 	rm -Rf dist $(VENV)
