@@ -3,7 +3,7 @@ VENV = .venv
 .PHONY: install build upload clean confirm
 
 build: $(VENV)
-	$(VENV)/bin/python setup.py sdist
+	$(VENV)/bin/python -m build
 
 install: $(VENV)
 	$(VENV)/bin/pip install --upgrade build setuptools

@@ -12,7 +12,8 @@ with io.open('README.md', 'rt', encoding='utf8') as f:
 
 setup(
     name='pyintelbras',
-    version='0.0.1',
+    version='0.0.4',
+    packages=['pyintelbras'],
     url='https://github.com/wiltonsr/PyIntelbras',
     license='MIT',
     author='Wilton Rodrigues',
@@ -20,7 +21,6 @@ setup(
     description='Python Wrapper for Intelbras API',
     long_description=readme,
     long_description_content_type='text/markdown',
-    py_modules=['pyintelbras'],
     zip_safe=False,
     include_package_data=True,
     platforms='any',

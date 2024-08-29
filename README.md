@@ -18,7 +18,7 @@ Instale PyIntelbras usando pip:
 $ pip install pyintelbras
 ```
 
-Agora é possível importate e usar PyIntelbras da seguinte forma:
+Agora é possível importar e usar o PyIntelbras da seguinte forma:
 
 ```python
 from pyintelbras import IntelbrasAPI
