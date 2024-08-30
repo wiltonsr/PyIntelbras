@@ -60,8 +60,9 @@ from pyintelbras import IntelbrasAPI
 api = IntelbrasAPI("http://device-server.example.com")
 api.login("api-user", "api-pass")
 
+# Mesmo efeito para ambas as requisições
 response = api.configManager(action='getConfig', name='ChannelTitle')
-response = api.configManager.get(action='getConfig', name='ChannelTitle') # Mesmo efeito que a requisição acima
+response = api.configManager.get(action='getConfig', name='ChannelTitle')
 ```
 
 #### POST
