@@ -43,7 +43,7 @@ class IntelbrasAPI:
             f"{url_parts.path}"  # in case of proxy context path
             f"/cgi-bin/"  # requirement of Intelbras API
             f"{path.replace('.', '/')}"  # replacing dots with slashes
-            f"{'/' + urlencode(extra_path) if extra_path else ''}"  # add extra path is exists # noqa: E501
+            f"{extra_path}"  # add extra path
             f".cgi"  # requirement of Intelbras API
         )
 
