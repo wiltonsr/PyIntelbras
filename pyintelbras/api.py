@@ -57,7 +57,7 @@ class IntelbrasAPI:
 
         url = res.geturl()
 
-        logger.debug(f'Requesting to URL {url}')
+        logger.debug(f'Requesting {method} to URL {url}')
 
         extra_headers = {
             "User-Agent": "python/pyintelbras",
