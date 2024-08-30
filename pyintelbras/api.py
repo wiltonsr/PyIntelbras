@@ -49,10 +49,14 @@ class IntelbrasAPI:
 
         logger.debug(f'Requesting to URL {url}')
 
-        return requests.request(method=method, url=url, verify=self.verify_ssl)
+        return requests.request(
+            method=method, url=url, auth=self.auth, verify=self.verify_ssl
+        )
 
     def __getattr__(self, name):
         def method(*args, **kwargs):
-            print(f"Call method '{name}' with arguments: {args} and {kwargs}")
-            self.do_request('GET', name, kwargs)
+            logger.debug(
+                f"Call method '{name}' with arguments: {args} and {kwargs}"
+            )
+            return self.do_request('GET', name, kwargs)
         return method
