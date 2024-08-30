@@ -8,8 +8,6 @@ _Obs:_ Caso o link da documentação esteja _offline_, a mesma também está dis
 
 - Testado com a API `V3.35` de um `iNVD 9116 PE FT`.
 
-## Documentação
-
 ### Iniciando
 
 Instale PyIntelbras usando pip:
@@ -28,6 +26,60 @@ api.login("api-user", "api-pass")
 
 response = api.configManager(action='getConfig', name='ChannelTitle')
 ```
+
+## Documentação
+
+O **PyIntelbras** utiliza a biblioteca [_requests_](https://requests.readthedocs.io/en/master/) para HTTP. Todos os _paths_ existentes na API da Intelbras podem ser utilizados como métodos e seus respectivos parâmetros também podem ser passados como parâmetros das funções.
+
+```python
+from pyintelbras import IntelbrasAPI
+
+api = IntelbrasAPI("http://device-server.example.com")
+api.login("api-user", "api-pass")
+
+response = api.configManager(action='getConfig', name='ChannelTitle')
+```
+
+O exemplo acima irá realizar uma requisição `GET` para o endereço:
+
+`http://device-server.example.com/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle`.
+
+Note que tanto o prefixo `cgi-bin` quanto o sufixo `.cgi`, exigidos pela API, são automaticamente adicionados.
+
+### Tipo de Requisição
+
+É possível definir o tipo de requisição, sendo permitidos apenas 2 verbos HTTP.
+
+Por padrão e caso seja omitido, a requisição será do tipo `GET`.
+
+#### GET
+
+```python
+from pyintelbras import IntelbrasAPI
+
+api = IntelbrasAPI("http://device-server.example.com")
+api.login("api-user", "api-pass")
+
+response = api.configManager(action='getConfig', name='ChannelTitle')
+response = api.configManager.get(action='getConfig', name='ChannelTitle') # Mesmo efeito que a requisição acima
+```
+
+#### POST
+
+```python
+from pyintelbras import IntelbrasAPI
+
+api = IntelbrasAPI("http://device-server.example.com")
+api.login("api-user", "api-pass")
+
+response = api.api.LogicDeviceManager.getCameraState.post(body={ 'uniqueChannels': [-1] })
+```
+
+O exemplo acima irá realizar uma requisição `POST` para o endereço:
+
+`http://device-server.example.com/cgi-bin/api/LogicDeviceManager/getCameraState.cgi`.
+
+E enviar o conteúdo da variável `body` como corpo da requisição.
 
 ### Habilitando Logs
 
@@ -49,3 +101,7 @@ api.login("api-user", "api-pass")
 
 response = api.configManager(action='getConfig', name='ChannelTitle')
 ```
+
+### Exemplos
+
+Outros exemplos de uso da API estão disponíveis no diretório [examples](examples) do repositório.
