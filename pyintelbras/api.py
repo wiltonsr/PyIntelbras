@@ -21,6 +21,7 @@ class IntelbrasAPI:
 
         self.server = server.rstrip('/')
         self.auth = auth
+        self.verify_ssl = verify_ssl
 
         logger.info("API Server Endpoint: %s", self.server)
 
