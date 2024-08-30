@@ -1,5 +1,6 @@
 import logging
 import requests
+import re
 
 from requests.auth import HTTPDigestAuth
 from urllib.parse import urlencode, urlparse, parse_qsl, ParseResult
@@ -32,7 +33,8 @@ class IntelbrasAPI:
         self.auth = HTTPDigestAuth(user, password)
 
     def do_request(
-        self, method: str, path: str, params: dict, extra_path: str = ''
+        self, method: str, path: str, params: dict,
+        extra_path: str = '', headers: dict = {}, body: dict = None
     ):
         url_parts = urlparse(self.server)
 
@@ -57,14 +59,58 @@ class IntelbrasAPI:
 
         logger.debug(f'Requesting to URL {url}')
 
+        extra_headers = {
+            "User-Agent": "python/pyintelbras",
+            "Cache-Control": "no-cache",
+        }
+
+        extra_headers.update(headers)
+
         return requests.request(
-            method=method, url=url, auth=self.auth, verify=self.verify_ssl
+            method=method, url=url,
+            auth=self.auth, verify=self.verify_ssl,
+            headers=extra_headers, json=body
         )
 
+    def _method(self, attr: str) -> "IntelbrasAPIMethod":
+        """Dynamically create a method (ie: get)"""
+        return IntelbrasAPIMethod([attr], self)
+
+    def __getattr__(self, attr: str) -> "IntelbrasAPIMethod":
+        return self._method(attr)
+
+    def __getitem__(self, attr: str) -> "IntelbrasAPIMethod":
+        return self._method(attr)
+
+
+class IntelbrasAPIMethod:
+    def __init__(self, methods: dict = None, parent: IntelbrasAPI = None):
+        self.methods = methods or []
+        self.parent = parent
+
     def __getattr__(self, name):
-        def method(extra_path: str = '', *args, **kwargs):
-            logger.debug(
-                f"Call method '{name}' with arguments: {args} and {kwargs}"
-            )
-            return self.do_request('GET', name, kwargs, extra_path)
-        return method
+        return IntelbrasAPIMethod(self.methods + [name], self.parent)
+
+    def __call__(
+        self, extra_path: str = '',
+        headers: dict = {}, body: dict = None,
+        *args, **kwargs
+    ):
+        method_chain = ".".join(self.methods)
+        logger.debug(
+            f"Call method '{method_chain}' with arguments: {
+                args} and {kwargs}"
+        )
+
+        method = method_chain.split('.')[-1].upper()
+        if method != 'GET' and method != 'POST':
+            method = 'GET'
+            path = method_chain
+        else:
+            pattern = re.compile(r'.(get|post)$', re.IGNORECASE)
+            path = pattern.sub('', method_chain)
+
+        return self.parent.do_request(
+            method=method, path=path, params=kwargs,
+            extra_path=extra_path, headers=headers, body=body
+        )
