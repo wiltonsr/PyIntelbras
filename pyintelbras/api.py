@@ -37,7 +37,7 @@ class IntelbrasAPI:
         query = dict(parse_qsl(url_parts.params))
         query.update(params)
 
-        url_path = f'/cgi-bin/{url_parts.params}{path.replace('.', '/')}.cgi'
+        url_path = f"/cgi-bin/{url_parts.params}{path.replace('.', '/')}.cgi"
 
         res = ParseResult(
             scheme=url_parts.scheme, netloc=url_parts.netloc,
@@ -53,7 +53,6 @@ class IntelbrasAPI:
 
     def __getattr__(self, name):
         def method(*args, **kwargs):
-            print(f"Call method '{
-                  name}' with arguments: {args} and {kwargs}")
+            print(f"Call method '{name}' with arguments: {args} and {kwargs}")
             self.do_request('GET', name, kwargs)
         return method
