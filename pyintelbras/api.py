@@ -98,8 +98,8 @@ class IntelbrasAPIMethod:
     ):
         method_chain = ".".join(self.methods)
         logger.debug(
-            f"Call method '{method_chain}' with arguments: {
-                args} and {kwargs}"
+            f"Call method '{method_chain}' with arguments: "
+            f"{args} and {kwargs}"
         )
 
         method = method_chain.split('.')[-1].upper()
