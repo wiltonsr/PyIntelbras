@@ -31,13 +31,21 @@ class IntelbrasAPI:
             raise IntelbrasAPIException('Empty user or password')
         self.auth = HTTPDigestAuth(user, password)
 
-    def do_request(self, method: str, path: str, params: dict):
+    def do_request(
+        self, method: str, path: str, params: dict, extra_path: str = ''
+    ):
         url_parts = urlparse(self.server)
 
         query = dict(parse_qsl(url_parts.params))
         query.update(params)
 
-        url_path = f"/cgi-bin/{url_parts.params}{path.replace('.', '/')}.cgi"
+        url_path = (
+            f"{url_parts.path}"  # in case of proxy context path
+            f"/cgi-bin/"  # requirement of Intelbras API
+            f"{path.replace('.', '/')}"  # replacing dots with slashes
+            f"{'/' + urlencode(extra_path) if extra_path else ''}"  # add extra path is exists # noqa: E501
+            f".cgi"  # requirement of Intelbras API
+        )
 
         res = ParseResult(
             scheme=url_parts.scheme, netloc=url_parts.netloc,
@@ -54,9 +62,9 @@ class IntelbrasAPI:
         )
 
     def __getattr__(self, name):
-        def method(*args, **kwargs):
+        def method(extra_path: str = '', *args, **kwargs):
             logger.debug(
                 f"Call method '{name}' with arguments: {args} and {kwargs}"
             )
-            return self.do_request('GET', name, kwargs)
+            return self.do_request('GET', name, kwargs, extra_path)
         return method
