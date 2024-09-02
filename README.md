@@ -82,6 +82,30 @@ O exemplo acima irá realizar uma requisição `POST` para o endereço:
 
 E enviar o conteúdo da variável `body` como corpo da requisição.
 
+### Diferenciação entre Maiúsculas e Minúsculas
+
+A API da Intelbrás é _case sensitive_, ou seja, faz diferenciação entre maiúsculas e minúsculas. Por conta disto, a URL de requisição é montada exatamente conforme os métodos e parâmetros são passados.
+
+Sendo assim, a requisição abaixo deverá retornar o código de status HTTP `200`:
+
+<pre>
+api.config<b>M</b>anager(action='getConfig', name='ChannelTitle')
+</pre>
+
+Enquanto isso, a requisição abaixo retornará o código de status HTTP `400`:
+
+<pre>
+api.config<b>m</b>anager(action='getConfig', name='ChannelTitle')
+</pre>
+
+Note a diferença da grafia da letra _M_. Isso irá ocorrer pelo fato de não existir a rota:
+
+`.../cgi-bin/configmanager.cgi/...`
+
+e sim:
+
+`.../cgi-bin/configManager.cgi/...`.
+
 ### Habilitando Logs
 
 Se for necessário debugar algum problema com as requisições para a API da Intelbras, é possível habilitar a saída de logs. O `pyintelbras` utiliza o sistema de _logging_ do Python, mas por padrão, ele registra para _Null_. É possível alterar esse comportamento. Segue um exemplo:
