@@ -2,7 +2,8 @@
 
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/pyintelbras.svg)](https://pypi.org/project/pyintelbras/)
 [![PyPI Package Version](https://img.shields.io/pypi/v/pyintelbras.svg)](https://pypi.org/project/pyintelbras/)
-![GitHub License](https://img.shields.io/github/license/wiltonsr/pyintelbras)
+![GitHub License](https://img.shields.io/github/license/wiltonsr/pyintelbras?link=https%3A%2F%2Fgithub.com%2Fwiltonsr%2FPyIntelbras%2Fblob%2Fmain%2FLICENSE)
+
 
 **PyIntelbras** é um módulo Python para trabalhar com a [API Intelbras V3.35](https://botminio.apps.intelbras.com.br/sdk-api/HTTP%20API%20V3.35_Intelbras.pdf).
 
