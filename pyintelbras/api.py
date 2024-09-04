@@ -80,9 +80,6 @@ class IntelbrasAPI:
     def __getattr__(self, attr: str) -> "IntelbrasAPIMethod":
         return self._method(attr)
 
-    def __getitem__(self, attr: str) -> "IntelbrasAPIMethod":
-        return self._method(attr)
-
 
 class IntelbrasAPIMethod:
     def __init__(self, methods: dict = None, parent: IntelbrasAPI = None):
