@@ -2,6 +2,8 @@
 
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/pyintelbras.svg)](https://pypi.org/project/pyintelbras/)
 [![PyPI Package Version](https://img.shields.io/pypi/v/pyintelbras.svg)](https://pypi.org/project/pyintelbras/)
+![GitHub Issues](https://img.shields.io/github/issues/wiltonsr/pyintelbras)
+![GitHub commit activity (branch)](https://img.shields.io/github/last-commit/wiltonsr/pyintelbras/main)
 ![GitHub License](https://img.shields.io/github/license/wiltonsr/pyintelbras?link=https%3A%2F%2Fgithub.com%2Fwiltonsr%2FPyIntelbras%2Fblob%2Fmain%2FLICENSE)
 
 
