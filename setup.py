@@ -12,8 +12,9 @@ with io.open('README.md', 'rt', encoding='utf8') as f:
 
 setup(
     name='pyintelbras',
-    version='0.0.17',
+    version='0.0.18',
     packages=['pyintelbras'],
+    python_requires=">=3",
     url='https://github.com/wiltonsr/PyIntelbras',
     license='MIT',
     author='Wilton Rodrigues',
