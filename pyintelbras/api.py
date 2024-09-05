@@ -66,7 +66,7 @@ class IntelbrasAPI:
         query = dict(parse_qsl(url_parts.params))
         query.update(params)
 
-        if not extra_path.startswith('/'):
+        if extra_path != '' and not extra_path.startswith('/'):
             extra_path = f"/{extra_path}"
 
         url_path = (
