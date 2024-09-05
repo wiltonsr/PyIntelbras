@@ -120,5 +120,5 @@ class IntelbrasAPIMethod:
 
         return self.parent.do_request(
             method=method, path=path, params=kwargs,
-            extra_path=extra_path, headers=headers, body=body
+            extra_path=extra_path.strip(), headers=headers, body=body
         )
