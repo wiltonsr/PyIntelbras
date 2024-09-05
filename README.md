@@ -6,7 +6,6 @@
 ![GitHub commit activity (branch)](https://img.shields.io/github/last-commit/wiltonsr/pyintelbras/main)
 ![GitHub License](https://img.shields.io/github/license/wiltonsr/pyintelbras?link=https%3A%2F%2Fgithub.com%2Fwiltonsr%2FPyIntelbras%2Fblob%2Fmain%2FLICENSE)
 
-
 **PyIntelbras** é um módulo Python para trabalhar com a [API Intelbras V3.35](https://botminio.apps.intelbras.com.br/sdk-api/HTTP%20API%20V3.35_Intelbras.pdf).
 
 _Obs:_ Caso o link da documentação esteja _offline_, a mesma também está disponível no diretório [docs](docs) do repositório.
@@ -112,6 +111,37 @@ Note a diferença da grafia da letra _M_. Isso irá ocorrer pelo fato de não ex
 e sim:
 
 `.../cgi-bin/configManager.cgi/...`.
+
+### Uso de Parâmetros
+
+Os componente de consulta (_query parameters_), utilizados como parâmetros das funções, devem ser tratados adequadamente quando possuírem sintaxe inválida no python. Basicamente isso será necessário quando houver
+`.` ou `[]` nos parâmetros. O seguinte exemplo:
+
+```python
+...
+response = api.mediaFileFind(action='findFile', condition.Channel=1)
+```
+
+Retornará o erro:
+
+```python
+  Cell In[1], line 1
+    response = api.mediaFileFind(action='findFile', condition.Channel=1)
+                                                    ^
+SyntaxError: expression cannot contain assignment, perhaps you meant "=="?
+```
+
+A forma correta de lidar neste caso é utilizando a [descompactação de listas de argumentos](https://docs.python.org/3/tutorial/controlflow.html#unpacking-argument-lists).
+
+```python
+...
+params = {
+    'action': 'findFile',
+    'condition.Channel': 1
+}
+
+response = api.mediaFileFind(**params)
+```
 
 ### Habilitando Logs
 
