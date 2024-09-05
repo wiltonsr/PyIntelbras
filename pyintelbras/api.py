@@ -37,23 +37,8 @@ class IntelbrasAPI:
         self, method: str, path: str, params: dict,
         extra_path: str = '', headers: dict = {}, body: dict = None
     ):
-        url_parts = urlparse(self.server)
-
-        query = dict(parse_qsl(url_parts.params))
-        query.update(params)
-
-        url_path = (
-            f"{url_parts.path}"  # in case of proxy context path
-            f"/cgi-bin/"  # requirement of Intelbras API
-            f"{path.replace('.', '/')}"  # replacing dots with slashes
-            f"{extra_path}"  # add extra path
-            f".cgi"  # requirement of Intelbras API
-        )
-
-        res = ParseResult(
-            scheme=url_parts.scheme, netloc=url_parts.netloc,
-            path=url_path, params=url_parts.params,
-            query=urlencode(params), fragment=url_parts.fragment
+        res = self._parse_api_url(
+            path=path, params=params, extra_path=extra_path
         )
 
         url = res.geturl()
@@ -71,6 +56,31 @@ class IntelbrasAPI:
             method=method, url=url,
             auth=self.auth, verify=self.verify_ssl,
             headers=extra_headers, json=body
+        )
+
+    def _parse_api_url(
+        self, path: str, params: dict, extra_path: str = ''
+    ) -> ParseResult:
+        url_parts = urlparse(self.server)
+
+        query = dict(parse_qsl(url_parts.params))
+        query.update(params)
+
+        if not extra_path.startswith('/'):
+            extra_path = f"/{extra_path}"
+
+        url_path = (
+            f"{url_parts.path}"  # in case of proxy context path
+            f"/cgi-bin/"  # requirement of Intelbras API
+            f"{path.replace('.', '/')}"  # replacing dots with slashes
+            f"{extra_path}"  # add extra path
+            f".cgi"  # requirement of Intelbras API
+        )
+
+        return ParseResult(
+            scheme=url_parts.scheme, netloc=url_parts.netloc,
+            path=url_path, params=url_parts.params,
+            query=urlencode(params), fragment=url_parts.fragment
         )
 
     def _method(self, attr: str) -> "IntelbrasAPIMethod":
