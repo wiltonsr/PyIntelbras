@@ -33,6 +33,10 @@ class IntelbrasAPI:
             raise IntelbrasAPIException('Empty user or password')
         self.auth = HTTPDigestAuth(user, password)
 
+    def api_version(self) -> str:
+        r = self.IntervideoManager(action='getVersion', Name='CGI')
+        return r.content.decode()
+
     def do_request(
         self, method: str, path: str, params: dict,
         extra_path: str = '', headers: dict = {}, body: dict = None
