@@ -1,11 +1,12 @@
 VENV = .venv
 
-.PHONY: install build upload clean confirm
+.PHONY: $(VENV) install build upload clean confirm
 
-build: $(VENV)
+build: install
 	$(VENV)/bin/python -m build
 
 install: $(VENV)
+	$(VENV)/bin/python -m pip install --upgrade pip
 	$(VENV)/bin/pip install --upgrade build setuptools
 
 upload: confirm build
@@ -18,7 +19,6 @@ clean:
 
 $(VENV):
 	python3 -m venv $(VENV)
-	$(MAKE) install
 
 confirm:
 	@echo -n 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
