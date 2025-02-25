@@ -3,8 +3,10 @@ import requests
 import re
 
 from requests.auth import HTTPDigestAuth
+from requests import Response
 from urllib.parse import urlencode, urlparse, parse_qsl, ParseResult
 from .exceptions import IntelbrasAPIException
+from .helpers import parse_response
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -33,9 +35,15 @@ class IntelbrasAPI:
             raise IntelbrasAPIException('Empty user or password')
         self.auth = HTTPDigestAuth(user, password)
 
-    def api_version(self) -> str:
+    def api_version(self) -> dict:
         r = self.IntervideoManager(action='getVersion', Name='CGI')
-        return r.content.decode()
+        return parse_response(r.text)
+
+    def get_channels(self) -> list:
+        r = self.configManager(action='getConfig', name='ChannelTitle')
+        parsed_response = parse_response(r.text)
+
+        return parsed_response.get('table').get('ChannelTitle')
 
     def do_request(
         self, method: str, path: str, params: dict,
@@ -107,7 +115,7 @@ class IntelbrasAPIMethod:
         self, extra_path: str = '',
         headers: dict = {}, body: dict = None,
         *args, **kwargs
-    ):
+    ) -> Response:
         method_chain = ".".join(self.methods)
         logger.debug(
             f"Call method '{method_chain}' with arguments: "
