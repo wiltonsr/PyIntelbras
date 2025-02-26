@@ -49,7 +49,6 @@ class IntelbrasAPI:
         # Helper method to docs section 4.10.5 Find Media Files
         def execute_action(action: str, **kwargs) -> dict:
             r = self.mediaFileFind(action=action, **kwargs)
-            logger.debug(f"action='{action}' status code {r.status_code}")
             return parse_response(r.text)
 
         # Step 1 - Create a media files finder.
@@ -99,11 +98,14 @@ class IntelbrasAPI:
 
         extra_headers.update(headers)
 
-        return requests.request(
+        r = requests.request(
             method=method, url=url,
             auth=self.auth, verify=self.verify_ssl,
             headers=extra_headers, json=body
         )
+
+        logger.debug(f'Request status_code {r.status_code} - {r.reason}')
+        return r
 
     def _parse_api_url(
         self, path: str, params: dict, extra_path: str = ''
