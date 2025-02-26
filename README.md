@@ -226,6 +226,43 @@ api.find_media_files(params)
 #   'CutLength': 3276800}]}
 ```
 
+- Processar respostas
+
+Algumas repostas da `API` são enviadas no formato `chave=valor` no corpo da resposta.
+
+Nestes casos, é possível utilizar a função `parse_response` para converter a resposta em um [dicionário](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) python para facilitar a manipulação dos dados.
+
+```python
+...
+from pyintelbras.helpers import parse_response
+...
+response = api.recordManager(action='getCaps')
+print(response.text)
+# caps.MaxPreRecordTime=30
+# caps.PacketLengthRange[0]=1
+# caps.PacketLengthRange[1]=60
+# caps.PacketSizeRange[0]=131072
+# caps.PacketSizeRange[1]=2097152
+# caps.SupportExtraRecordMode=true
+# caps.SupportHoliday=true
+# caps.SupportPacketType[0]=Time
+# caps.SupportPacketType[1]=Size
+# caps.SupportResumeTransmit=false
+
+d = parse_response(response.text)
+print(d)
+# {'caps': {'MaxPreRecordTime': 30,
+#   'PacketLengthRange': [1, 60],
+#   'PacketSizeRange': [131072, 2097152],
+#   'SupportExtraRecordMode': True,
+#   'SupportHoliday': True,
+#   'SupportPacketType': ['Time', 'Size'],
+#   'SupportResumeTransmit': False}}
+
+print(d.get('caps').get('PacketLengthRange')[1])
+# 60
+```
+
 ### Exemplos
 
 Outros exemplos de uso da API estão disponíveis no diretório [examples](examples) do repositório.
