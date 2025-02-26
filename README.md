@@ -19,7 +19,7 @@ _Obs:_ Caso o link da documentação esteja _offline_, a mesma também está dis
 Instale PyIntelbras usando pip:
 
 ```bash
-$ pip install pyintelbras
+pip install pyintelbras
 ```
 
 Agora é possível importar e usar o PyIntelbras da seguinte forma:
@@ -162,6 +162,68 @@ api = IntelbrasAPI("http://device-server.example.com")
 api.login("api-user", "api-pass")
 
 response = api.configManager(action='getConfig', name='ChannelTitle')
+```
+
+### Métodos Helpers
+
+Existem alguns métodos para facilitar determinadas comunicações com a `API`.
+
+- Verificar versão da API
+
+```python
+...
+api.api_version()
+# {'version': 2.84}
+```
+
+- Listar canais
+
+```python
+...
+api.get_channels()
+# [{'Name': 'Lab01'},
+# {'Name': 'Lab02'},
+# {'Name': 'Lab03'},
+# {'Name': 'Lab04'},
+# {'Name': 'Lab05'},
+# {'Name': 'Lab06'},
+# {'Name': 'Canal7'},
+# {'Name': 'Canal8'},
+# {'Name': 'Canal9'},
+# {'Name': 'Canal10'},
+# {'Name': 'Canal11'},
+# {'Name': 'Canal12'},
+# {'Name': 'Canal13'},
+# {'Name': 'Canal14'},
+# {'Name': 'Canal15'},
+# {'Name': 'Canal16'}]
+```
+
+- Encontrar mídias
+
+```python
+...
+params = {
+  'condition.Channel': 1,
+  'condition.StartTime': '2024-8-27 12:00:00',
+  'condition.EndTime': '2024-8-29 12:00:00'
+}
+
+api.find_media_files(params)
+# {'found': 1,
+# 'items': [{'VideoStream': 'Main',
+#   'Channel': 0,
+#   'Type': 'dav',
+#   'StartTime': datetime.datetime(2024, 8, 28, 2, 40, 49),
+#   'EndTime': datetime.datetime(2024, 8, 28, 2, 41),
+#   'Disk': 2,
+#   'Partition': 2,
+#   'Cluster': 371211,
+#   'FilePath': '/mnt/dvr/2024-08-28/0/dav/02/0/2/371211/02.40.49-02.41.00[R][0@0][0].dav',
+#   'Length': 3276800,
+#   'Flags': ['Event'],
+#   'Events': ['FaceRecognition'],
+#   'CutLength': 3276800}]}
 ```
 
 ### Exemplos

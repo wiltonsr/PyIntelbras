@@ -45,6 +45,41 @@ class IntelbrasAPI:
 
         return parsed_response.get('table').get('ChannelTitle')
 
+    def find_media_files(self, params: dict) -> dict:
+        # Helper method to docs section 4.10.5 Find Media Files
+        def execute_action(action: str, **kwargs) -> dict:
+            r = self.mediaFileFind(action=action, **kwargs)
+            logger.debug(f"action='{action}' status code {r.status_code}")
+            return parse_response(r.text)
+
+        # Step 1 - Create a media files finder.
+        create_response = execute_action('factory.create')
+        object_number = create_response.get('result')
+
+        if not object_number:
+            raise IntelbrasAPIException("Failed to create media file finder")
+
+        # Step 2 - Start to find media files satisfied the conditions with the finder.
+        params.update({'action': 'findFile', 'object': object_number})
+        execute_action(**params)
+
+        # Step 3 - Get the media file information found by the finder.
+        find_next_response = execute_action(
+            'findNextFile',
+            object=object_number,
+            count=100
+        )
+        found = find_next_response.get('found')
+        logger.debug(f"Found {found} media files.")
+
+        # Step 4 - Close the finder.
+        execute_action('close', object=object_number)
+
+        # Step 5 - Destroy the finder.
+        execute_action('destroy', object=object_number)
+
+        return find_next_response
+
     def do_request(
         self, method: str, path: str, params: dict,
         extra_path: str = '', headers: dict = {}, body: dict = None
