@@ -201,6 +201,16 @@ api.get_channels()
 
 - Encontrar mídias
 
+Buscar por mídias na `API` envolve `5` ações:
+
+1. factory.create
+1. findFile
+1. findNextFile
+1. close
+1. destroy
+
+O método `find_media_files` facilita esse procedimento, internalizando toda essa complexidade, sendo necessário informar apenas os parâmetros da busca.
+
 ```python
 ...
 params = {
