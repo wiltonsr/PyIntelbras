@@ -6,13 +6,13 @@
 ![GitHub commit activity (branch)](https://img.shields.io/github/last-commit/wiltonsr/pyintelbras/main)
 ![GitHub License](https://img.shields.io/github/license/wiltonsr/pyintelbras?link=https%3A%2F%2Fgithub.com%2Fwiltonsr%2FPyIntelbras%2Fblob%2Fmain%2FLICENSE)
 
-**PyIntelbras** é um módulo Python para trabalhar com a [API Intelbras V3.35](https://botminio.apps.intelbras.com.br/sdk-api/HTTP%20API%20V3.35_Intelbras.pdf).
+**PyIntelbras** é um módulo Python para trabalhar com a [API Intelbras V3.59](https://botminio.apps.intelbras.com.br/dvr/HTTP_API_V3_59_Intelbras.pdf).
 
 _Obs:_ Caso o link da documentação esteja _offline_, a mesma também está disponível no diretório [docs](docs) do repositório.
 
 ## Requisitos
 
-- Testado com a API `V3.35` de um `iNVD 9116 PE FT`.
+- Testado com a API `2.84` de um `iNVD 9116 PE FT`.
 
 ### Iniciando
 
