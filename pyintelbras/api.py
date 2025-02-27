@@ -51,6 +51,24 @@ class IntelbrasAPI:
 
         return parsed_response.get('table').get('ChannelTitle')
 
+    def rtsp_url(self, protocol: str = 'rtsp', port: int = 554, channel: int = 1, subtype: int = 0) -> str:
+        url_parts = urlparse(self.server)
+
+        query = dict(parse_qsl(url_parts.params))
+        query.update({'channel': channel, 'subtype': subtype})
+
+        path = f'{url_parts.path}/cam/realmonitor'
+
+        netloc = f'{url_parts.hostname}:{port}'
+        if self.user and self.password:
+            netloc = f'{self.user}:{self.password}@{netloc}'
+
+        return ParseResult(
+            scheme=protocol, netloc=netloc,
+            path=path, params=url_parts.params,
+            query=urlencode(query), fragment=url_parts.fragment
+        ).geturl()
+
     def find_media_files(self, params: dict) -> dict:
         # Helper method to docs section 4.10.5 Find Media Files
         def execute_action(action: str, **kwargs) -> dict:
@@ -135,7 +153,7 @@ class IntelbrasAPI:
         return ParseResult(
             scheme=url_parts.scheme, netloc=url_parts.netloc,
             path=url_path, params=url_parts.params,
-            query=urlencode(params), fragment=url_parts.fragment
+            query=urlencode(query), fragment=url_parts.fragment
         )
 
     def _method(self, attr: str) -> "IntelbrasAPIMethod":
