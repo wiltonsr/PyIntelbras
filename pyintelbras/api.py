@@ -15,22 +15,26 @@ logger.addHandler(logging.NullHandler())
 class IntelbrasAPI:
     def __init__(
         self, server: str = 'http://localhost',
+        user: str = '',
+        password: str = '',
         auth: HTTPDigestAuth = None,
-        verify_ssl: bool = False
+        verify_ssl: bool = False,
     ) -> None:
         if not server.startswith('http'):
             server = 'http://' + server
 
         self.server = server.rstrip('/')
         self.auth = auth
+        self.user = user
+        self.password = password
         self.verify_ssl = verify_ssl
+
+        if user and password and not auth:
+            self.login(user, password)
 
         logger.info("API Server Endpoint: %s", self.server)
 
-    def login(
-            self,
-            user: str = "",
-            password: str = "") -> None:
+    def login(self, user: str = '', password: str = '') -> None:
         if not user or not password:
             raise IntelbrasAPIException('Empty user or password')
         self.auth = HTTPDigestAuth(user, password)
