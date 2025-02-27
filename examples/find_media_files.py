@@ -11,11 +11,11 @@ log = logging.getLogger('pyintelbras')
 log.addHandler(stream)
 log.setLevel(logging.DEBUG)
 
-api = IntelbrasAPI('example.com')
-api.login('user', 'pass')
+intelbras = IntelbrasAPI('example.com')
+intelbras.login('user', 'pass')
 
 # Step 1 - Create a media files finder.
-r = api.mediaFileFind(action='factory.create')
+r = intelbras.mediaFileFind(action='factory.create')
 print(r.content.decode())
 
 if r.status_code == 200:
@@ -28,25 +28,25 @@ if r.status_code == 200:
         'condition.StartTime': '2024-8-27 12:00:00',
         'condition.EndTime': '2024-8-29 12:00:00'
     }
-    r = api.mediaFileFind(**params)
+    r = intelbras.mediaFileFind(**params)
     print(r.content.decode())
 
     # Step 3 - Get the media file information found by the finder.
-    r = api.mediaFileFind(action='findNextFile',
+    r = intelbras.mediaFileFind(action='findNextFile',
                           object=object_number, count=100)
     print(r.content.decode())
 
     # Step 4 - Close the finder.
-    r = api.mediaFileFind(action='close', object=object_number)
+    r = intelbras.mediaFileFind(action='close', object=object_number)
     print(r.content.decode())
 
     # Step 5 - Destroy the finder.
-    r = api.mediaFileFind(action='destroy', object=object_number)
+    r = intelbras.mediaFileFind(action='destroy', object=object_number)
     print(r.content.decode())
 
     # 4.10.13 Download Media File with the File Name
     # The file provided here it's just a sample. You must get a real file path from Step 3 # noqa: E501
-    r = api.RPC_Loadfile(
+    r = intelbras.RPC_Loadfile(
         extra_path='/mnt/dvr/2024-08-28/0/dav/02/0/2/371245/02.44.14-02.44.24[R][0@0][0].dav')  # noqa: E501
     print(r)
 

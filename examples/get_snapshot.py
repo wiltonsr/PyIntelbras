@@ -10,10 +10,10 @@ log = logging.getLogger('pyintelbras')
 log.addHandler(stream)
 log.setLevel(logging.DEBUG)
 
-api = IntelbrasAPI('example.com')
-api.login('user', 'pass')
+intelbras = IntelbrasAPI('example.com')
+intelbras.login('user', 'pass')
 
-response = api.snapshot(channel=1, type=0)
+response = intelbras.snapshot(channel=1, type=0)
 
 print(response.status_code)
 

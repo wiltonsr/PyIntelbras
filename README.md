@@ -27,10 +27,10 @@ Agora é possível importar e usar o PyIntelbras da seguinte forma:
 ```python
 from pyintelbras import IntelbrasAPI
 
-api = IntelbrasAPI("http://device-server.example.com")
-api.login("api-user", "api-pass")
+intelbras = IntelbrasAPI("http://device-server.example.com")
+intelbras.login("api-user", "api-pass")
 
-response = api.configManager(action='getConfig', name='ChannelTitle')
+response = intelbras.configManager(action='getConfig', name='ChannelTitle')
 ```
 
 ## Documentação
@@ -40,10 +40,10 @@ O **PyIntelbras** utiliza a biblioteca [_requests_](https://requests.readthedocs
 ```python
 from pyintelbras import IntelbrasAPI
 
-api = IntelbrasAPI("http://device-server.example.com")
-api.login("api-user", "api-pass")
+intelbras = IntelbrasAPI("http://device-server.example.com")
+intelbras.login("api-user", "api-pass")
 
-response = api.configManager(action='getConfig', name='ChannelTitle')
+response = intelbras.configManager(action='getConfig', name='ChannelTitle')
 ```
 
 O exemplo acima irá realizar uma requisição `GET` para o endereço:
@@ -63,12 +63,12 @@ Por padrão e caso seja omitido, a requisição será do tipo `GET`.
 ```python
 from pyintelbras import IntelbrasAPI
 
-api = IntelbrasAPI("http://device-server.example.com")
-api.login("api-user", "api-pass")
+intelbras = IntelbrasAPI("http://device-server.example.com")
+intelbras.login("api-user", "api-pass")
 
 # Mesmo efeito para ambas as requisições
-response = api.configManager(action='getConfig', name='ChannelTitle')
-response = api.configManager.get(action='getConfig', name='ChannelTitle')
+response = intelbras.configManager(action='getConfig', name='ChannelTitle')
+response = intelbras.configManager.get(action='getConfig', name='ChannelTitle')
 ```
 
 #### POST
@@ -76,10 +76,10 @@ response = api.configManager.get(action='getConfig', name='ChannelTitle')
 ```python
 from pyintelbras import IntelbrasAPI
 
-api = IntelbrasAPI("http://device-server.example.com")
-api.login("api-user", "api-pass")
+intelbras = IntelbrasAPI("http://device-server.example.com")
+intelbras.login("api-user", "api-pass")
 
-response = api.api.LogicDeviceManager.getCameraState.post(body={ 'uniqueChannels': [-1] })
+response = intelbras.api.LogicDeviceManager.getCameraState.post(body={ 'uniqueChannels': [-1] })
 ```
 
 O exemplo acima irá realizar uma requisição `POST` para o endereço:
@@ -95,13 +95,13 @@ A API da Intelbrás é _case sensitive_, ou seja, faz diferenciação entre mai�
 Sendo assim, a requisição abaixo deverá retornar o código de status HTTP `200`:
 
 <pre>
-api.config<b>M</b>anager(action='getConfig', name='ChannelTitle')
+intelbras.config<b>M</b>anager(action='getConfig', name='ChannelTitle')
 </pre>
 
 Enquanto isso, a requisição abaixo retornará o código de status HTTP `400`:
 
 <pre>
-api.config<b>m</b>anager(action='getConfig', name='ChannelTitle')
+intelbras.config<b>m</b>anager(action='getConfig', name='ChannelTitle')
 </pre>
 
 Note a diferença da grafia da letra _M_. Isso irá ocorrer pelo fato de não existir a rota:
@@ -119,14 +119,14 @@ Os componente de consulta (_query parameters_), utilizados como parâmetros das 
 
 ```python
 ...
-response = api.mediaFileFind(action='findFile', condition.Channel=1)
+response = intelbras.mediaFileFind(action='findFile', condition.Channel=1)
 ```
 
 Retornará o erro:
 
 ```python
   Cell In[1], line 1
-    response = api.mediaFileFind(action='findFile', condition.Channel=1)
+    response = intelbras.mediaFileFind(action='findFile', condition.Channel=1)
                                                     ^
 SyntaxError: expression cannot contain assignment, perhaps you meant "=="?
 ```
@@ -140,7 +140,7 @@ params = {
     'condition.Channel': 1
 }
 
-response = api.mediaFileFind(**params)
+response = intelbras.mediaFileFind(**params)
 ```
 
 ### Habilitando Logs
@@ -158,10 +158,10 @@ log = logging.getLogger('pyintelbras')
 log.addHandler(stream)
 log.setLevel(logging.DEBUG)
 
-api = IntelbrasAPI("http://device-server.example.com")
-api.login("api-user", "api-pass")
+intelbras = IntelbrasAPI("http://device-server.example.com")
+intelbras.login("api-user", "api-pass")
 
-response = api.configManager(action='getConfig', name='ChannelTitle')
+response = intelbras.configManager(action='getConfig', name='ChannelTitle')
 ```
 
 ### Métodos Helpers
@@ -172,7 +172,7 @@ Existem alguns métodos para facilitar determinadas comunicações com a `API`.
 
 ```python
 ...
-api.api_version()
+intelbras.api_version
 # {'version': 2.84}
 ```
 
@@ -180,7 +180,7 @@ api.api_version()
 
 ```python
 ...
-api.get_channels()
+intelbras.channels
 # [{'Name': 'Lab01'},
 # {'Name': 'Lab02'},
 # {'Name': 'Lab03'},
@@ -219,7 +219,7 @@ params = {
   'condition.EndTime': '2024-8-29 12:00:00'
 }
 
-api.find_media_files(params)
+intelbras.find_media_files(params)
 # {'found': 1,
 # 'items': [{'VideoStream': 'Main',
 #   'Channel': 0,
@@ -246,7 +246,7 @@ Nestes casos, é possível utilizar a função `parse_response` para converter a
 ...
 from pyintelbras.helpers import parse_response
 ...
-response = api.recordManager(action='getCaps')
+response = intelbras.recordManager(action='getCaps')
 print(response.text)
 # caps.MaxPreRecordTime=30
 # caps.PacketLengthRange[0]=1

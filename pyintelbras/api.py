@@ -35,11 +35,13 @@ class IntelbrasAPI:
             raise IntelbrasAPIException('Empty user or password')
         self.auth = HTTPDigestAuth(user, password)
 
+    @property
     def api_version(self) -> dict:
         r = self.IntervideoManager(action='getVersion', Name='CGI')
         return parse_response(r.text)
 
-    def get_channels(self) -> list:
+    @property
+    def channels(self) -> list:
         r = self.configManager(action='getConfig', name='ChannelTitle')
         parsed_response = parse_response(r.text)
 
