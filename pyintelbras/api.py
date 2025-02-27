@@ -37,6 +37,8 @@ class IntelbrasAPI:
     def login(self, user: str = '', password: str = '') -> None:
         if not user or not password:
             raise IntelbrasAPIException('Empty user or password')
+        self.user = user
+        self.password = password
         self.auth = HTTPDigestAuth(user, password)
 
     @property

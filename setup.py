@@ -12,7 +12,7 @@ with io.open('README.md', 'rt', encoding='utf8') as f:
 
 setup(
     name='pyintelbras',
-    version='0.0.30',
+    version='0.0.31',
     packages=['pyintelbras'],
     python_requires=">=3",
     url='https://github.com/wiltonsr/PyIntelbras',
