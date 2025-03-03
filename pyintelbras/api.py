@@ -4,7 +4,7 @@ import re
 
 from requests.auth import HTTPDigestAuth
 from requests import Response
-from urllib.parse import urlencode, urlparse, parse_qsl, ParseResult
+from urllib.parse import urlencode, urlparse, parse_qsl, ParseResult, quote, unquote
 from .exceptions import IntelbrasAPIException
 from .helpers import parse_response
 
@@ -52,6 +52,11 @@ class IntelbrasAPI:
         parsed_response = parse_response(r.text)
 
         return parsed_response.get('table').get('ChannelTitle')
+
+    def download(self, channel, start, end, file):
+        r = self.loadfile(action="startLoad", channel=channel, startTime=start,
+                          endTime=end, subtype="0", Types="dav")
+        open(file + '.mp4', 'wb').write(r.content)
 
     def rtsp_url(self, protocol: str = 'rtsp', port: int = 554, channel: int = 1, subtype: int = 0) -> str:
         url_parts = urlparse(self.server)
@@ -155,7 +160,7 @@ class IntelbrasAPI:
         return ParseResult(
             scheme=url_parts.scheme, netloc=url_parts.netloc,
             path=url_path, params=url_parts.params,
-            query=urlencode(query), fragment=url_parts.fragment
+            query=unquote(urlencode(query, safe=":")), fragment=url_parts.fragment
         )
 
     def _method(self, attr: str) -> "IntelbrasAPIMethod":
