@@ -22,10 +22,38 @@ class TestIntelbrasAPI(unittest.TestCase):
 
     @patch('pyintelbras.api.requests.request')
     def test_login(self, mock_request):
-        self.api.login('user', 'pass')
-        self.assertEqual(self.api.user, 'user')
-        self.assertEqual(self.api.password, 'pass')
-        self.assertIsInstance(self.api.auth, HTTPDigestAuth)
+        # No login
+        self.api = IntelbrasAPI(server='http://localhost')
+        self.assertEqual(self.api.user, '')
+        self.assertEqual(self.api.password, '')
+
+        # user and pass login on instantiantion
+        self.api = IntelbrasAPI(server='http://localhost',
+                                user='user1', password='pass1')
+        self.assertEqual(self.api.user, 'user1')
+        self.assertEqual(self.api.password, 'pass1')
+        self.assertEqual(self.api.auth, HTTPDigestAuth('user1', 'pass1'))
+
+        # user and pass with login method
+        self.api = IntelbrasAPI(server='http://localhost')
+        self.api.login('user2', 'pass2')
+        self.assertEqual(self.api.user, 'user2')
+        self.assertEqual(self.api.password, 'pass2')
+        self.assertEqual(self.api.auth, HTTPDigestAuth('user2', 'pass2'))
+
+        # user and pass with auth object on instantiation
+        self.api = IntelbrasAPI(server='http://localhost',
+                                auth=HTTPDigestAuth('user3', 'pass3'))
+        self.assertEqual(self.api.user, 'user3')
+        self.assertEqual(self.api.password, 'pass3')
+        self.assertEqual(self.api.auth, HTTPDigestAuth('user3', 'pass3'))
+
+        # user, pass and auth object on instantiation
+        self.api = IntelbrasAPI(server='http://localhost', user='user', password='pass',
+                                auth=HTTPDigestAuth('user4', 'pass4'))
+        self.assertEqual(self.api.user, 'user4')
+        self.assertEqual(self.api.password, 'pass4')
+        self.assertEqual(self.api.auth, HTTPDigestAuth('user4', 'pass4'))
 
     @patch('pyintelbras.api.requests.request')
     def test_api_version(self, mock_request):

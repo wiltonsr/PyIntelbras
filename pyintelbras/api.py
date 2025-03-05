@@ -24,8 +24,8 @@ class IntelbrasAPI:
             'http') else f'http://{server}'
         self.server = self.server.rstrip('/')
         self.auth = auth
-        self.user = user
-        self.password = password
+        self.user = self.auth.username if auth else user
+        self.password = self.auth.password if auth else password
         self.verify_ssl = verify_ssl
 
         if user and password and not auth:
