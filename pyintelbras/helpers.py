@@ -38,10 +38,10 @@ def parse_response(s: str) -> dict:
     # Initialize the dictionary
     result = {}
 
-    # Split the string into lines, handling various line breaks and spaces
-    lines = [line.strip() for line in s.splitlines() if line.strip()]
-
     try:
+        # Split the string into lines, handling various line breaks and spaces
+        lines = [line.strip() for line in s.splitlines() if line.strip()]
+
         # Process each line
         for line in lines:
             # Ignore entries without '=' sign

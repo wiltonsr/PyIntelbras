@@ -1,8 +1,7 @@
 import logging
 import requests
 import re
-
-from typing import Union, Tuple
+from typing import Union, Tuple, Dict, List
 from requests.auth import HTTPDigestAuth
 from requests import Response
 from urllib.parse import urlencode, urlparse, parse_qsl, ParseResult
@@ -21,10 +20,9 @@ class IntelbrasAPI:
         auth: HTTPDigestAuth = None,
         verify_ssl: bool = False,
     ) -> None:
-        if not server.startswith('http'):
-            server = 'http://' + server
-
-        self.server = server.rstrip('/')
+        self.server = server if server.startswith(
+            'http') else f'http://{server}'
+        self.server = self.server.rstrip('/')
         self.auth = auth
         self.user = user
         self.password = password
@@ -33,9 +31,9 @@ class IntelbrasAPI:
         if user and password and not auth:
             self.login(user, password)
 
-        logger.info("API Server Endpoint: %s", self.server)
+        logger.info(f"API Server Endpoint: {self.server}")
 
-    def login(self, user: str = '', password: str = '') -> None:
+    def login(self, user: str, password: str) -> None:
         if not user or not password:
             raise IntelbrasAPIException('Empty user or password')
         self.user = user
@@ -44,28 +42,23 @@ class IntelbrasAPI:
 
     @property
     def api_version(self) -> dict:
-        r = self.IntervideoManager(action='getVersion', Name='CGI')
-        return parse_response(r.text)
+        response = self.IntervideoManager(action='getVersion', Name='CGI')
+        return parse_response(response.text)
 
     @property
     def channels(self) -> list:
-        r = self.configManager(action='getConfig', name='ChannelTitle')
-        parsed_response = parse_response(r.text)
-
-        return parsed_response.get('table').get('ChannelTitle')
+        response = self.configManager(action='getConfig', name='ChannelTitle')
+        parsed_response = parse_response(response.text)
+        return parsed_response.get('table', {}).get('ChannelTitle', [])
 
     def rtsp_url(self, protocol: str = 'rtsp', port: int = 554, channel: int = 1, subtype: int = 0) -> str:
         url_parts = urlparse(self.server)
-
-        query = dict(parse_qsl(url_parts.params))
+        query = dict(parse_qsl(url_parts.query))
         query.update({'channel': channel, 'subtype': subtype})
-
         path = f'{url_parts.path}/cam/realmonitor'
-
         netloc = f'{url_parts.hostname}:{port}'
         if self.user and self.password:
             netloc = f'{self.user}:{self.password}@{netloc}'
-
         return ParseResult(
             scheme=protocol, netloc=netloc,
             path=path, params=url_parts.params,
@@ -75,8 +68,8 @@ class IntelbrasAPI:
     def find_media_files(self, params: dict) -> dict:
         # Helper method to docs section 4.10.5 Find Media Files
         def execute_action(action: str, **kwargs) -> dict:
-            r = self.mediaFileFind(action=action, **kwargs)
-            return parse_response(r.text)
+            response = self.mediaFileFind(action=action, **kwargs)
+            return parse_response(response.text)
 
         # Step 1 - Create a media files finder.
         create_response = execute_action('factory.create')
@@ -91,10 +84,7 @@ class IntelbrasAPI:
 
         # Step 3 - Get the media file information found by the finder.
         find_next_response = execute_action(
-            'findNextFile',
-            object=object_number,
-            count=100
-        )
+            'findNextFile', object=object_number, count=100)
         found = find_next_response.get('found')
         logger.debug(f"Found {found} media files.")
 
@@ -110,48 +100,41 @@ class IntelbrasAPI:
         self, method: str, path: str, params: dict,
         timeout: Union[float, Tuple[float, float]] = None,
         extra_path: str = '', headers: dict = {}, body: dict = None
-    ):
-        res = self._parse_api_url(
-            path=path, params=params, extra_path=extra_path
-        )
-
-        url = res.geturl()
-
+    ) -> Response:
+        url = self._parse_api_url(
+            path=path, params=params, extra_path=extra_path).geturl()
         logger.debug(f'Requesting {method} to URL {url}')
 
         extra_headers = {
             "User-Agent": "python/pyintelbras",
             "Cache-Control": "no-cache",
         }
-
         extra_headers.update(headers)
 
-        r = requests.request(
+        response = requests.request(
             method=method, url=url, timeout=timeout,
             auth=self.auth, verify=self.verify_ssl,
             headers=extra_headers, json=body
         )
 
-        logger.debug(f'Request status_code {r.status_code} - {r.reason}')
-        return r
+        logger.debug(
+            f'Request status_code {response.status_code} - {response.reason}')
+        return response
 
-    def _parse_api_url(
-        self, path: str, params: dict, extra_path: str = ''
-    ) -> ParseResult:
+    def _parse_api_url(self, path: str, params: dict, extra_path: str = '') -> ParseResult:
         url_parts = urlparse(self.server)
-
-        query = dict(parse_qsl(url_parts.params))
+        query = dict(parse_qsl(url_parts.query))
         query.update(params)
 
-        if extra_path != '' and not extra_path.startswith('/'):
+        if extra_path and not extra_path.startswith('/'):
             extra_path = f"/{extra_path}"
 
         url_path = (
-            f"{url_parts.path}"  # in case of proxy context path
-            f"/cgi-bin/"  # requirement of Intelbras API
+            f"{url_parts.path}"          # in case of proxy context path
+            f"/cgi-bin/"                 # requirement of Intelbras API
             f"{path.replace('.', '/')}"  # replacing dots with slashes
-            f"{extra_path}"  # add extra path
-            f".cgi"  # requirement of Intelbras API
+            f"{extra_path}"              # add extra path
+            f".cgi"                      # requirement of Intelbras API
         )
 
         return ParseResult(
@@ -161,7 +144,6 @@ class IntelbrasAPI:
         )
 
     def _method(self, attr: str) -> "IntelbrasAPIMethod":
-        """Dynamically create a method (ie: get)"""
         return IntelbrasAPIMethod([attr], self)
 
     def __getattr__(self, attr: str) -> "IntelbrasAPIMethod":
@@ -169,11 +151,11 @@ class IntelbrasAPI:
 
 
 class IntelbrasAPIMethod:
-    def __init__(self, methods: dict = None, parent: IntelbrasAPI = None):
+    def __init__(self, methods: List[str] = None, parent: IntelbrasAPI = None):
         self.methods = methods or []
         self.parent = parent
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> "IntelbrasAPIMethod":
         return IntelbrasAPIMethod(self.methods + [name], self.parent)
 
     def __call__(
@@ -184,17 +166,15 @@ class IntelbrasAPIMethod:
     ) -> Response:
         method_chain = ".".join(self.methods)
         logger.debug(
-            f"Call method '{method_chain}' with arguments: "
-            f"{args} and {kwargs}"
-        )
+            f"Call method '{method_chain}' with arguments: {args} and {kwargs}")
 
         method = method_chain.split('.')[-1].upper()
-        if method != 'GET' and method != 'POST':
+        if method not in {'GET', 'POST'}:
             method = 'GET'
             path = method_chain
         else:
-            pattern = re.compile(r'.(get|post)$', re.IGNORECASE)
-            path = pattern.sub('', method_chain)
+            path = re.sub(r'.(get|post)$', '',
+                          method_chain, flags=re.IGNORECASE)
 
         return self.parent.do_request(
             method=method, path=path, params=kwargs, timeout=timeout,

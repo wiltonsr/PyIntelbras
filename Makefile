@@ -22,3 +22,6 @@ $(VENV):
 
 confirm:
 	@echo -n 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
+
+test:
+	python3 -m unittest discover -s tests
