@@ -44,8 +44,20 @@ class TestIntelbrasAPI(unittest.TestCase):
         self.assertEqual(channels[0]['Name'], 'Lab01')
 
     def test_rtsp_url(self):
+        self.api = IntelbrasAPI(server='http://localhost')
         url = self.api.rtsp_url(channel=1, subtype=0)
-        self.assertIn('rtsp://', url)
+        self.assertEqual(
+            url, 'rtsp://localhost:554/cam/realmonitor?channel=1&subtype=0')
+        url = self.api.rtsp_url(port=445, channel=2, subtype=1)
+        self.assertEqual(
+            url, 'rtsp://localhost:445/cam/realmonitor?channel=2&subtype=1')
+        url = self.api.rtsp_url(protocol='rtsps', channel=3)
+        self.assertEqual(
+            url, 'rtsps://localhost:554/cam/realmonitor?channel=3&subtype=0')
+        self.api.login('user', 'pass')
+        url = self.api.rtsp_url(channel=1, subtype=0)
+        self.assertEqual(
+            url, 'rtsp://user:pass@localhost:554/cam/realmonitor?channel=1&subtype=0')
 
     @patch('pyintelbras.api.requests.request')
     def test_find_media_files(self, mock_request):
