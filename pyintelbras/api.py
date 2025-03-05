@@ -2,6 +2,7 @@ import logging
 import requests
 import re
 
+from typing import Union, Tuple
 from requests.auth import HTTPDigestAuth
 from requests import Response
 from urllib.parse import urlencode, urlparse, parse_qsl, ParseResult
@@ -107,6 +108,7 @@ class IntelbrasAPI:
 
     def do_request(
         self, method: str, path: str, params: dict,
+        timeout: Union[float, Tuple[float, float]] = None,
         extra_path: str = '', headers: dict = {}, body: dict = None
     ):
         res = self._parse_api_url(
@@ -125,7 +127,7 @@ class IntelbrasAPI:
         extra_headers.update(headers)
 
         r = requests.request(
-            method=method, url=url,
+            method=method, url=url, timeout=timeout,
             auth=self.auth, verify=self.verify_ssl,
             headers=extra_headers, json=body
         )
@@ -177,6 +179,7 @@ class IntelbrasAPIMethod:
     def __call__(
         self, extra_path: str = '',
         headers: dict = {}, body: dict = None,
+        timeout: Union[float, Tuple[float, float]] = None,
         *args, **kwargs
     ) -> Response:
         method_chain = ".".join(self.methods)
@@ -194,6 +197,6 @@ class IntelbrasAPIMethod:
             path = pattern.sub('', method_chain)
 
         return self.parent.do_request(
-            method=method, path=path, params=kwargs,
+            method=method, path=path, params=kwargs, timeout=timeout,
             extra_path=extra_path.strip(), headers=headers, body=body
         )
