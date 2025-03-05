@@ -105,6 +105,35 @@ class TestIntelbrasAPI(unittest.TestCase):
         response = self.api.do_request('GET', 'path', {})
         self.assertEqual(response.status_code, 200)
 
+    @patch('pyintelbras.api.requests.request')
+    def test_request_url_mounting(self, mock_request):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_request.return_value = mock_response
+
+        self.api.configManager(action='getConfig', name='ChannelTitle')
+        self.assertEqual(self.api.last_request_url,
+                         'http://localhost/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle')
+
+        self.api.configManager.get(action='getConfig', name='ChannelTitle')
+        self.assertEqual(self.api.last_request_url,
+                         'http://localhost/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle')
+
+        self.api.configManager(extra_path='extra_path1',
+                               action='getConfig', name='ChannelTitle')
+        self.assertEqual(self.api.last_request_url,
+                         'http://localhost/cgi-bin/configManager/extra_path1.cgi?action=getConfig&name=ChannelTitle')
+
+        self.api.configManager(extra_path='/extra_path2',
+                               action='getConfig', name='ChannelTitle')
+        self.assertEqual(self.api.last_request_url,
+                         'http://localhost/cgi-bin/configManager/extra_path2.cgi?action=getConfig&name=ChannelTitle')
+
+        self.api.api.LogicDeviceManager.getCameraState.post(
+            body={'uniqueChannels': [-1]})
+        self.assertEqual(self.api.last_request_url,
+                         'http://localhost/cgi-bin/api/LogicDeviceManager/getCameraState.cgi')
+
 
 if __name__ == '__main__':
     unittest.main()
