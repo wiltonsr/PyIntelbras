@@ -27,6 +27,7 @@ class IntelbrasAPI:
         self.user = self.auth.username if auth else user
         self.password = self.auth.password if auth else password
         self.verify_ssl = verify_ssl
+        self.last_request_url = None
 
         if user and password and not auth:
             self.login(user, password)
@@ -104,6 +105,7 @@ class IntelbrasAPI:
         url = self._parse_api_url(
             path=path, params=params, extra_path=extra_path).geturl()
         logger.debug(f'Requesting {method} to URL {url}')
+        self.last_request_url = url
 
         extra_headers = {
             "User-Agent": "python/pyintelbras",
