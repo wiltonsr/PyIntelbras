@@ -135,7 +135,7 @@ class IntelbrasAPI:
             f"{url_parts.path}"          # in case of proxy context path
             f"/cgi-bin/"                 # requirement of Intelbras API
             f"{path.replace('.', '/')}"  # replacing dots with slashes
-            f"{extra_path}"              # needed to download media file with filename
+            f"{extra_path}"              # needed to download media file with filename # noqa: E501
             f".cgi"                      # requirement of Intelbras API
         )
 
